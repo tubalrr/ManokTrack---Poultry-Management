@@ -1,0 +1,152 @@
+{
+  "entities": {
+    "Batch": {
+      "title": "Batch",
+      "description": "Poultry batch or flock records",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string", "maxLength": 64 },
+        "breed": { "type": "string", "enum": ["Broiler", "Layer", "Native"] },
+        "dateStarted": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "initialCount": { "type": "number" },
+        "currentCount": { "type": "number" },
+        "mortalityCount": { "type": "number" },
+        "source": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["Active", "Sold", "Completed"] },
+        "averageWeightKg": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["batchId", "breed", "dateStarted", "initialCount", "status"]
+    },
+    "DailyLog": {
+      "title": "DailyLog",
+      "description": "Daily recording of feed, water, mortality and eggs per batch",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string", "maxLength": 64 },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "feedConsumedKg": { "type": "number" },
+        "waterConsumedL": { "type": "number" },
+        "mortalityCount": { "type": "number" },
+        "mortalityCause": { "type": "string", "maxLength": 150 },
+        "eggsCollectedPcs": { "type": "number" },
+        "averageWeightKg": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["batchId", "date"]
+    },
+    "FeedInventory": {
+      "title": "FeedInventory",
+      "description": "Feed stock tracking with automated deduction",
+      "type": "object",
+      "properties": {
+        "feedType": { "type": "string", "maxLength": 50 },
+        "stockKg": { "type": "number" },
+        "pricePerKg": { "type": "number" },
+        "supplier": { "type": "string", "maxLength": 100 },
+        "notes": { "type": "string", "maxLength": 300 },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["feedType", "stockKg", "pricePerKg"]
+    },
+    "EggCollection": {
+      "title": "EggCollection",
+      "description": "Detailed graded egg production per day",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string", "maxLength": 64 },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "gradeSmall": { "type": "number" },
+        "gradeMedium": { "type": "number" },
+        "gradeLarge": { "type": "number" },
+        "gradeXL": { "type": "number" },
+        "totalEggs": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["batchId", "date", "totalEggs"]
+    },
+    "HealthLog": {
+      "title": "HealthLog",
+      "description": "Vaccination and medication schedules and records",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string", "maxLength": 64 },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "vaccineName": { "type": "string", "maxLength": 100 },
+        "dosage": { "type": "string", "maxLength": 100 },
+        "cost": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 300 },
+        "status": { "type": "string", "enum": ["Completed", "Scheduled"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["batchId", "date", "vaccineName"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Farm operating expenses",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string", "maxLength": 64 },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "category": { "type": "string", "enum": ["Feed", "Vaccine", "Chick", "Labor", "Electric", "Equipment", "Other"] },
+        "amountPhp": { "type": "number" },
+        "description": { "type": "string", "maxLength": 300 },
+        "receiptRef": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["date", "category", "amountPhp"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Revenue from eggs, live birds, dressed birds, and manure",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string", "maxLength": 64 },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "type": { "type": "string", "enum": ["Eggs", "Bird Sales", "Manure", "Other"] },
+        "buyer": { "type": "string", "maxLength": 100 },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string", "maxLength": 30 },
+        "unitPricePhp": { "type": "number" },
+        "totalPhp": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["date", "type", "quantity", "unitPricePhp", "totalPhp"]
+    }
+  },
+  "firestore": {
+    "/batches/{batchId}": {
+      "schema": "Batch",
+      "description": "Flock batch profiles"
+    },
+    "/dailyLogs/{logId}": {
+      "schema": "DailyLog",
+      "description": "Daily batch metrics and consumption"
+    },
+    "/feedInventory/{feedId}": {
+      "schema": "FeedInventory",
+      "description": "Stock of feeds"
+    },
+    "/eggCollections/{collectionId}": {
+      "schema": "EggCollection",
+      "description": "Detailed graded egg production entries"
+    },
+    "/healthLogs/{logId}": {
+      "schema": "HealthLog",
+      "description": "Vaccinations and medical treatments"
+    },
+    "/expenses/{expenseId}": {
+      "schema": "Expense",
+      "description": "Expenses breakdown"
+    },
+    "/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Revenue and sales logs"
+    }
+  }
+}
